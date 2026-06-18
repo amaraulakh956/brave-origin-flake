@@ -2,7 +2,7 @@
 , gtk3, glib, nss, nspr, atk, cups, dbus, expat, libdrm
 , libX11, libXcomposite, libXdamage, libXext, libXfixes, libXrandr
 , mesa, libxkbcommon, pango, cairo, alsa-lib
-, at-spi2-atk, at-spi2-core, qt5, qt6 }:
+, at-spi2-atk, at-spi2-core, qt6 }:
 
 stdenv.mkDerivation rec {
   pname = "brave-origin-nightly";
@@ -15,20 +15,22 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ dpkg autoPatchelfHook wrapGAppsHook3 ];
 
- buildInputs = [
-  gtk3 glib nss nspr atk cups dbus expat libdrm
-  libX11 libXcomposite libXdamage libXext libXfixes libXrandr
-  mesa libxkbcommon pango cairo alsa-lib
-  at-spi2-atk at-spi2-core
-  qt6.qtbase
-  qt6.qtwayland
-];
+  buildInputs = [
+    gtk3 glib nss nspr atk cups dbus expat libdrm
+    libX11 libXcomposite libXdamage libXext libXfixes libXrandr
+    mesa libxkbcommon pango cairo alsa-lib
+    at-spi2-atk at-spi2-core
+    qt6.qtbase
+    qt6.qtwayland
+  ];
 
-autoPatchelfIgnoreMissingDeps = [
-  "libQt5Core.so.5"
-  "libQt5Gui.so.5"
-  "libQt5Widgets.so.5"
-];
+  dontWrapQtApps = true;
+
+  autoPatchelfIgnoreMissingDeps = [
+    "libQt5Core.so.5"
+    "libQt5Gui.so.5"
+    "libQt5Widgets.so.5"
+  ];
 
   unpackPhase = ''
     dpkg-deb --fsys-tarfile $src | tar x --no-same-permissions --no-same-owner
