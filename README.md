@@ -18,6 +18,8 @@ Add `brave-origin` to your outputs args:
 outputs = { self, nixpkgs, brave-origin, ... } @ inputs:
 ```
 
+### Option 1 — home-manager
+
 Add to your `home.nix` packages:
 ```nix
 home.packages = [
@@ -25,17 +27,24 @@ home.packages = [
 ];
 ```
 
-Make sure `inputs` is passed through `extraSpecialArgs` in your `configuration.nix`:
+Make sure `inputs` is available in home-manager via `extraSpecialArgs`:
 ```nix
-home-manager = {
-  extraSpecialArgs = { inherit inputs; };
-  users.YOUR_USERNAME = import ./home.nix;
-};
+home-manager.extraSpecialArgs = { inherit inputs; };
 ```
 
-And accept it in `home.nix`:
+### Option 2 — NixOS system packages
+
+Add to your `configuration.nix`:
 ```nix
-{ config, pkgs, inputs, ... }:
+environment.systemPackages = [
+  inputs.brave-origin.packages.x86_64-linux.brave-origin-nightly
+];
+```
+
+### Option 3 — nix run (no install)
+
+```bash
+nix run github:amaraulakh956/brave-origin-flake
 ```
 
 ## Auto-updates
