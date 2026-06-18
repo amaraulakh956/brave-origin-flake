@@ -26,10 +26,14 @@ stdenv.mkDerivation rec {
     dpkg-deb --fsys-tarfile $src | tar x --no-same-permissions --no-same-owner
   '';
 
-  installPhase = ''
-    mkdir -p $out
-    cp -r usr/* $out/
-  '';
+installPhase = ''
+  mkdir -p $out/bin
+  mkdir -p $out/opt/brave.com/brave-origin-nightly
+  cp -r opt/brave.com/brave-origin-nightly/* $out/opt/brave.com/brave-origin-nightly/
+  ln -s $out/opt/brave.com/brave-origin-nightly/brave-origin-nightly $out/bin/brave-origin-nightly
+  mkdir -p $out/share
+  cp -r usr/share/* $out/share/ 2>/dev/null || true
+'';
 
   meta = {
     description = "Brave Origin Nightly - minimalist privacy browser";
