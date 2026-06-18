@@ -1,0 +1,39 @@
+name: Update Brave Origin Nightly
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # runs daily at 6am
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get latest version
+        id: version
+        run: |
+          VERSION=$(curl -s https://api.github.com/repos/brave/brave-browser/releases | \
+            jq -r '[.[] | select(.tag_name | startswith("v")) | select(.assets[]?.name | test("brave-origin-nightly.*amd64.deb"))] | first | .tag_name | ltrimstr("v")')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Get sha256
+        id: sha256
+        run: |
+          URL="https://github.com/brave/brave-browser/releases/download/v${{ steps.version.outputs.version }}/brave-origin-nightly_${{ steps.version.outputs.version }}_amd64.deb"
+          SHA256=$(nix-prefetch-url --type sha256 "$URL" 2>/dev/null || curl -sL "$URL" | sha256sum | cut -d' ' -f1)
+          echo "sha256=$SHA256" >> $GITHUB_OUTPUT
+
+      - name: Update package
+        run: |
+          sed -i "s/version = \".*\"/version = \"${{ steps.version.outputs.version }}\"/" pkgs/brave-origin-nightly.nix
+          sed -i "s/sha256 = \".*\"/sha256 = \"${{ steps.sha256.outputs.sha256 }}\"/" pkgs/brave-origin-nightly.nix
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add .
+          git diff --quiet && git diff --staged --quiet || git commit -m "update to ${{ steps.version.outputs.version }}"
+          git push
