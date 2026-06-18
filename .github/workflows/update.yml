@@ -1,8 +1,7 @@
 name: Update Brave Origin Nightly
-
 on:
   schedule:
-    - cron: '0 6 * * *'  # runs daily at 6am
+    - cron: '0 6 * * *'
   workflow_dispatch:
 
 jobs:
@@ -10,6 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
 
       - name: Get latest version
         id: version
@@ -22,7 +25,7 @@ jobs:
         id: sha256
         run: |
           URL="https://github.com/brave/brave-browser/releases/download/v${{ steps.version.outputs.version }}/brave-origin-nightly_${{ steps.version.outputs.version }}_amd64.deb"
-          SHA256=$(nix-prefetch-url --type sha256 "$URL" 2>/dev/null || curl -sL "$URL" | sha256sum | cut -d' ' -f1)
+          SHA256=$(nix-prefetch-url "$URL")
           echo "sha256=$SHA256" >> $GITHUB_OUTPUT
 
       - name: Update package
