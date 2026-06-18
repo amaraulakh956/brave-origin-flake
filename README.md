@@ -29,7 +29,7 @@ Make sure `inputs` is passed through `extraSpecialArgs` in your `configuration.n
 ```nix
 home-manager = {
   extraSpecialArgs = { inherit inputs; };
-  users.amar = import ./home.nix;
+  users.YOUR_USERNAME = import ./home.nix;
 };
 ```
 
