@@ -37,13 +37,17 @@ stdenv.mkDerivation rec {
   '';
 
   installPhase = ''
-    mkdir -p $out/bin
-    mkdir -p $out/opt/brave.com/brave-origin-nightly
-    cp -r opt/brave.com/brave-origin-nightly/* $out/opt/brave.com/brave-origin-nightly/
-    ln -s $out/opt/brave.com/brave-origin-nightly/brave-origin-nightly $out/bin/brave-origin-nightly
-    mkdir -p $out/share
-    cp -r usr/share/* $out/share/ 2>/dev/null || true
-  '';
+  mkdir -p $out/bin
+  mkdir -p $out/opt/brave.com/brave-origin-nightly
+  cp -r opt/brave.com/brave-origin-nightly/* $out/opt/brave.com/brave-origin-nightly/
+  ln -s $out/opt/brave.com/brave-origin-nightly/brave-origin-nightly $out/bin/brave-origin-nightly
+  mkdir -p $out/share
+  cp -r usr/share/* $out/share/ 2>/dev/null || true
+
+  # Fix desktop file paths
+  substituteInPlace $out/share/applications/brave-origin-nightly.desktop \
+    --replace "/usr/bin/brave-origin-nightly" "$out/bin/brave-origin-nightly"
+'';
 
   meta = {
     description = "Brave Origin Nightly - minimalist privacy browser";
