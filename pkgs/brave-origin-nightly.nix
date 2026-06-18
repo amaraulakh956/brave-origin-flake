@@ -1,6 +1,7 @@
 { lib, stdenv, fetchurl, dpkg, autoPatchelfHook, wrapGAppsHook3
 , gtk3, glib, nss, nspr, atk, cups, dbus, expat, libdrm
-, xorg, mesa, libxkbcommon, pango, cairo, alsa-lib
+, libX11, libXcomposite, libXdamage, libXext, libXfixes, libXrandr
+, mesa, libxkbcommon, pango, cairo, alsa-lib
 , at-spi2-atk, at-spi2-core }:
 
 stdenv.mkDerivation rec {
@@ -16,19 +17,18 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     gtk3 glib nss nspr atk cups dbus expat libdrm
-    xorg.libX11 xorg.libXcomposite xorg.libXdamage
-    xorg.libXext xorg.libXfixes xorg.libXrandr
+    libX11 libXcomposite libXdamage libXext libXfixes libXrandr
     mesa libxkbcommon pango cairo alsa-lib
     at-spi2-atk at-spi2-core
   ];
 
-  unpackPhase = "dpkg-deb -x $src .";
+  unpackPhase = ''
+    dpkg-deb --fsys-tarfile $src | tar x --no-same-permissions --no-same-owner
+  '';
 
   installPhase = ''
     mkdir -p $out
     cp -r usr/* $out/
-    mkdir -p $out/share/applications
-    cp -r etc/. $out/etc 2>/dev/null || true
   '';
 
   meta = {
