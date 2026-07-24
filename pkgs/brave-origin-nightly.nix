@@ -6,11 +6,11 @@
 
 stdenv.mkDerivation rec {
   pname = "brave-origin-nightly";
-  version = "1.95.1";
+  version = "1.95.5";
 
   src = fetchurl {
     url = "https://github.com/brave/brave-browser/releases/download/v${version}/${pname}_${version}_amd64.deb";
-    sha256 = "1p3ifwipnqfpk9kpkq1cf82896788il02q932d6gkg06d1jcagmk";
+    sha256 = "16sp3mjzyzbqyydwq8y1zi6bpl1r7pbsnlg7vm2bnls33pc5lbl8";
   };
 
   nativeBuildInputs = [ dpkg autoPatchelfHook wrapGAppsHook3 ];
